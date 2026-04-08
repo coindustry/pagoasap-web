@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PagoASAP — API Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #5947fd;
+      --blue-light: #7b6dfd;
+      --lime: #c2f870;
+      --black: #1c191e;
+      --gray-dark: #2a272d;
+      --gray-mid: #3d3a40;
+      --gray-light: #6b6870;
+      --platinum: #e2e1e4;
+      --white: #ffffff;
+      --sidebar-w: 280px;
+      --code-bg: #141318;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      display: flex;
+      min-height: 100vh;
+    }
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--black);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 40px;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--gray-mid); border-radius: 2px; }
+
+    .sidebar-logo {
+      padding: 28px 24px 24px;
+      border-bottom: 1px solid var(--gray-mid);
+    }
+    .logo-mark {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .logo-text {
+      font-size: 15px; font-weight: 700; color: var(--white);
+      letter-spacing: -0.3px;
+    }
+    .logo-sub {
+      font-size: 10px; color: var(--gray-light);
+      letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;
+    }
+    .sidebar-badge {
+      display: inline-block;
+      margin-top: 10px;
+      background: rgba(194,248,112,0.15);
+      color: var(--lime);
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .nav-section {
+      padding: 20px 16px 8px;
+    }
+    .nav-section-title {
+      font-size: 10px; font-weight: 600;
+      color: var(--gray-light);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0 8px;
+      margin-bottom: 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 8px;
+      border-radius: 6px;
+      font-size: 13px; color: #a09daa;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .nav-item:hover { background: var(--gray-mid); color: var(--white); }
+    .nav-item.active { background: rgba(89,71,253,0.2); color: var(--blue-light); font-weight: 500; }
+    .nav-item .method-badge {
+      font-size: 9px; font-weight: 700;
+      padding: 2px 5px; border-radius: 3px;
+      min-width: 34px; text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-get { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .badge-post { background: rgba(89,71,253,0.2); color: var(--blue-light); }
+    .badge-patch { background: rgba(251,191,36,0.15); color: #f59e0b; }
+    .badge-delete { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      background: #f9f9fb;
+    }
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--platinum);
+      padding: 0 48px;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar-tabs { display: flex; gap: 0; }
+    .topbar-tab {
+      padding: 18px 20px 16px;
+      font-size: 13px; font-weight: 500; color: var(--gray-light);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .topbar-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .topbar-right { display: flex; gap: 12px; align-items: center; }
+    .topbar-env {
+      display: flex; gap: 0;
+      border: 1px solid var(--platinum);
+      border-radius: 6px; overflow: hidden;
+    }
+    .env-btn {
+      padding: 5px 12px; font-size: 12px;
+      cursor: pointer; background: var(--white); color: var(--gray-light);
+      border: none; font-family: 'Inter', sans-serif;
+    }
+    .env-btn.active { background: var(--black); color: var(--white); }
+
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 48px 80px;
+    }
+
+    /* ── SECTIONS ── */
+    .doc-section {
+      margin-bottom: 72px;
+      scroll-margin-top: 80px;
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 8px;
+    }
+    h1 { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin-bottom: 12px; }
+    h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+    h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .lead {
+      font-size: 16px; line-height: 1.7; color: #4a4752;
+      margin-bottom: 32px; max-width: 680px;
+    }
+    p { font-size: 14px; line-height: 1.7; color: #4a4752; margin-bottom: 16px; }
+
+    /* ── ENDPOINT CARD ── */
+    .endpoint-card {
+      background: var(--white);
+      border: 1px solid var(--platinum);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .endpoint-header {
+      padding: 20px 24px;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+    }
+    .endpoint-header:hover { background: #fafafa; }
+    .endpoint-meta { flex: 1; }
+    .endpoint-path-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+    }
+    .http-badge {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 46px; text-align: center;
+    }
+    .endpoint-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; color: var(--black); font-weight: 500;
+    }
+    .endpoint-desc { font-size: 13px; color: var(--gray-light); }
+    .endpoint-expand { color: var(--gray-light); font-size: 18px; margin-top: 2px; }
+
+    .endpoint-body {
+      border-top: 1px solid var(--platinum);
+      display: none;
+    }
+    .endpoint-body.open { display: block; }
+
+    .endpoint-cols {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .endpoint-params {
+      padding: 24px;
+      border-right: 1px solid var(--platinum);
+    }
+    .endpoint-example {
+      padding: 0;
+      background: var(--code-bg);
+    }
+    .params-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--gray-light); margin-bottom: 16px;
+    }
+    .param-row {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0eff2;
+    }
+    .param-row:last-child { border-bottom: none; }
+    .param-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .param-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; font-weight: 500; color: var(--black);
+    }
+    .param-type {
+      font-size: 11px; color: #8b88a0;
+      background: #f5f4f8; padding: 1px 6px; border-radius: 3px;
+    }
+    .param-required {
+      font-size: 10px; color: #ef4444; font-weight: 600;
+    }
+    .param-desc { font-size: 12px; color: var(--gray-light); line-height: 1.5; }
+
+    /* ── CODE BLOCK ── */
+    .code-tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid #2a2830;
+    }
+    .code-tab {
+      padding: 10px 16px;
+      font-size: 12px; color: #6b6870;
+      cursor: pointer; border-bottom: 2px solid transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .code-tab.active { color: var(--lime); border-bottom-color: var(--lime); }
+
+    .code-block {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; line-height: 1.7;
+      color: #c9c7d4;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .k { color: #c792ea; } /* keyword */
+    .code-block .s { color: var(--lime); } /* string */
+    .code-block .n { color: #82aaff; } /* number */
+    .code-block .c { color: #546e7a; } /* comment */
+    .code-block .key { color: #89ddff; } /* key */
+    .code-label {
+      font-size: 10px; color: #4a4758;
+      padding: 8px 20px 0;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── INFO BOXES ── */
+    .info-box {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex; gap: 12px;
+      font-size: 13px; line-height: 1.6;
+    }
+    .info-box.blue {
+      background: rgba(89,71,253,0.06);
+      border: 1px solid rgba(89,71,253,0.2);
+      color: #4a4752;
+    }
+    .info-box.lime {
+      background: rgba(194,248,112,0.1);
+      border: 1px solid rgba(194,248,112,0.3);
+      color: #3a4a20;
+    }
+    .info-box.warn {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.25);
+      color: #5a4a20;
+    }
+    .info-box-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+    /* ── BASE URL CHIP ── */
+    .base-url-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--black); color: var(--white);
+      padding: 10px 16px; border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; margin-bottom: 32px;
+    }
+    .base-url-chip .dot {
+      width: 7px; height: 7px;
+      background: var(--lime); border-radius: 50%;
+    }
+
+    /* ── OBJECTS TABLE ── */
+    .obj-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; margin-bottom: 24px;
+      border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--platinum);
+    }
+    .obj-table th {
+      background: #f5f4f8;
+      padding: 10px 16px; text-align: left;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      color: var(--gray-light);
+    }
+    .obj-table td {
+      padding: 10px 16px; border-top: 1px solid #f0eff2;
+      color: #4a4752; vertical-align: top;
+    }
+    .obj-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--black); font-size: 12px;
+    }
+    .obj-table tr:hover td { background: #faf9fc; }
+
+    /* ── STATUS BADGES ── */
+    .status-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px;
+    }
+    .s-pending { background: rgba(251,191,36,0.15); color: #d97706; }
+    .s-approved { background: rgba(34,197,94,0.15); color: #16a34a; }
+    .s-declined { background: rgba(239,68,68,0.15); color: #dc2626; }
+    .s-active { background: rgba(89,71,253,0.15); color: var(--blue); }
+    .s-frozen { background: rgba(14,165,233,0.15); color: #0284c7; }
+    .s-cancelled { background: rgba(107,114,128,0.15); color: #6b7280; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow-diagram {
+      background: var(--white);
+      border: 1px solid var(--platinum);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .flow-steps {
+      display: flex; align-items: center; gap: 0;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 8px;
+    }
+    .flow-step-circle {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .flow-step-label { font-size: 11px; color: var(--gray-light); max-width: 80px; line-height: 1.3; }
+    .flow-arrow {
+      font-size: 20px; color: var(--platinum);
+      margin: 0 8px; padding-bottom: 20px;
+    }
+    .step-1 { background: rgba(89,71,253,0.15); color: var(--blue); }
+    .step-2 { background: rgba(251,191,36,0.15); color: #d97706; }
+    .step-3 { background: rgba(194,248,112,0.2); color: #65a30d; }
+    .step-4 { background: rgba(34,197,94,0.15); color: #16a34a; }
+    .step-5 { background: rgba(239,68,68,0.15); color: #dc2626; }
+
+    /* ── WEBHOOK EVENT ── */
+    .webhook-event {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      background: var(--white);
+      border: 1px solid var(--platinum);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .we-icon { font-size: 18px; }
+    .we-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; color: var(--black); font-weight: 500;
+    }
+    .we-desc { font-size: 12px; color: var(--gray-light); }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--platinum); margin: 40px 0; }
+
+    /* ── SCROLLBAR MAIN ── */
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--platinum); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .endpoint-cols { grid-template-columns: 1fr; }
+      .endpoint-params { border-right: none; border-bottom: 1px solid var(--platinum); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 3L4 14H11L11 21L20 10H13L13 3Z" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">PagoASAP</div>
+        <div class="logo-sub">Developer Docs</div>
+      </div>
+    </div>
+    <div class="sidebar-badge">v1.0 · BETA</div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-title">Introducción</div>
+      <a href="#overview" class="nav-item active">Visión General</a>
+      <a href="#auth" class="nav-item">Autenticación</a>
+      <a href="#errors" class="nav-item">Errores</a>
+      <a href="#webhooks-intro" class="nav-item">Webhooks</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Programas de Tarjeta</div>
+      <a href="#card-programs-list" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Listar programas
+      </a>
+      <a href="#card-programs-create" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Crear programa
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Titulares (Cardholders)</div>
+      <a href="#cardholders-create" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Crear titular
+      </a>
+      <a href="#cardholders-get" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Obtener titular
+      </a>
+      <a href="#cardholders-update" class="nav-item">
+        <span class="method-badge badge-patch">PATCH</span> Actualizar titular
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Tarjetas</div>
+      <a href="#cards-create" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Emitir tarjeta
+      </a>
+      <a href="#cards-get" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Obtener tarjeta
+      </a>
+      <a href="#cards-sensitive" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Datos sensibles
+      </a>
+      <a href="#cards-freeze" class="nav-item">
+        <span class="method-badge badge-patch">PATCH</span> Congelar/activar
+      </a>
+      <a href="#cards-topup" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Fondear tarjeta
+      </a>
+      <a href="#cards-physical" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Solicitar física
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Transacciones</div>
+      <a href="#tx-list" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Listar TXs
+      </a>
+      <a href="#tx-get" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Obtener TX
+      </a>
+      <a href="#tx-approve" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Aprobar TX ⚡
+      </a>
+      <a href="#tx-decline" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Rechazar TX
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Balance Prefunded</div>
+      <a href="#balance-get" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Consultar balance
+      </a>
+      <a href="#balance-fund" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Fondear cuenta
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Payouts</div>
+      <a href="#payouts-create" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Crear payout
+      </a>
+      <a href="#payouts-list" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Listar payouts
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Webhooks</div>
+      <a href="#webhooks-create" class="nav-item">
+        <span class="method-badge badge-post">POST</span> Registrar webhook
+      </a>
+      <a href="#webhooks-list" class="nav-item">
+        <span class="method-badge badge-get">GET</span> Listar webhooks
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-tabs">
+      <div class="topbar-tab active">API Reference</div>
+      <div class="topbar-tab">Guías</div>
+      <div class="topbar-tab">SDKs</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-env">
+        <button class="env-btn active">Sandbox</button>
+        <button class="env-btn">Producción</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <section class="doc-section" id="overview">
+      <span class="section-tag">Introducción</span>
+      <h1>API de Tarjetas PagoASAP</h1>
+      <p class="lead">PagoASAP es la infraestructura financiera de Venezuela que permite a fintechs y empresas no-financieras lanzar tarjetas cobranded 100% bancarias, gestionar pagos multimoneda y ofrecer payouts instantáneos — todo a través de una sola API.</p>
+
+      <div class="base-url-chip">
+        <span class="dot"></span>
+        https://api.pagoasap.com/v1
+      </div>
+
+      <div class="info-box lime">
+        <span class="info-box-icon">⚡</span>
+        <div><strong>Diferencial clave:</strong> A diferencia de otras plataformas, PagoASAP requiere que el partner <strong>apruebe explícitamente cada transacción</strong> a través del endpoint <code>/transactions/{id}/approve</code>. El débito se realiza de tu balance prefunded. Tienes hasta <strong>2 segundos</strong> para responder, garantizando control total sobre tus usuarios.</div>
+      </div>
+
+      <div class="info-box blue">
+        <span class="info-box-icon">🏦</span>
+        <div><strong>Respaldo bancario 100%:</strong> Todas las tarjetas se emiten con un banco regulado en Venezuela. PagoASAP gestiona el ciclo completo: emisión, personalización, impresión y delivery de tarjetas físicas a domicilio.</div>
+      </div>
+
+      <h2>Flujo de Autorización de Transacciones</h2>
+      <p>Cuando un tarjetahabiente intenta realizar una compra, PagoASAP consulta a tu sistema en tiempo real antes de autorizar:</p>
+
+      <div class="flow-diagram">
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-circle step-1">🛒</div>
+            <div class="flow-step-label">Compra del tarjetahabiente</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-circle step-2">🔔</div>
+            <div class="flow-step-label">PagoASAP notifica vía webhook</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-circle step-3">⏱</div>
+            <div class="flow-step-label">Tu sistema evalúa (≤2 seg)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-circle step-4">✅</div>
+            <div class="flow-step-label">Apruebas → débito de prefunded</div>
+          </div>
+          <div class="flow-arrow">/</div>
+          <div class="flow-step">
+            <div class="flow-step-circle step-5">❌</div>
+            <div class="flow-step-label">Rechazas → TX declinada</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>Objetos principales</h2>
+      <table class="obj-table">
+        <thead>
+          <tr><th>Objeto</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>card_program</td><td>Programa de tarjeta cobranded. Define la marca, límites y configuración del producto.</td></tr>
+          <tr><td>cardholder</td><td>Usuario final que posee la tarjeta. Requiere KYC básico.</td></tr>
+          <tr><td>card</td><td>Tarjeta virtual o física emitida a un cardholder bajo un programa.</td></tr>
+          <tr><td>transaction</td><td>Movimiento financiero que requiere aprobación del partner antes de procesarse.</td></tr>
+          <tr><td>prefunded_balance</td><td>Saldo que el partner mantiene en PagoASAP. Se debita al aprobar transacciones.</td></tr>
+          <tr><td>payout</td><td>Transferencia de fondos hacia cuentas externas vía las redes de ASAP.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── AUTH ── -->
+    <section class="doc-section" id="auth">
+      <span class="section-tag">Autenticación</span>
+      <h2>Autenticación</h2>
+      <p>PagoASAP utiliza <strong>Bearer tokens</strong> con OAuth 2.0 (Client Credentials). Incluye el token en el header <code>Authorization</code> de cada request.</p>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/auth/token</span>
+            </div>
+            <div class="endpoint-desc">Obtener access token (Client Credentials)</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row">
+                  <span class="param-name">client_id</span>
+                  <span class="param-type">string</span>
+                  <span class="param-required">REQUIRED</span>
+                </div>
+                <div class="param-desc">Tu Client ID de PagoASAP. Obtenido en el dashboard.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row">
+                  <span class="param-name">client_secret</span>
+                  <span class="param-type">string</span>
+                  <span class="param-required">REQUIRED</span>
+                </div>
+                <div class="param-desc">Tu Client Secret. Nunca lo expongas en el frontend.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row">
+                  <span class="param-name">grant_type</span>
+                  <span class="param-type">string</span>
+                  <span class="param-required">REQUIRED</span>
+                </div>
+                <div class="param-desc">Siempre: <code>client_credentials</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row">
+                  <span class="param-name">scope</span>
+                  <span class="param-type">string</span>
+                </div>
+                <div class="param-desc">Permisos requeridos. Ej: <code>cards:write transactions:approve</code></div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-tabs">
+                <div class="code-tab active">Request</div>
+                <div class="code-tab">Response</div>
+              </div>
+              <div class="code-block"><span class="c">// POST /auth/token</span>
+<span class="c">// Content-Type: application/x-www-form-urlencoded</span>
+
+<span class="key">client_id</span>=<span class="s">pk_live_abc123xyz</span>
+<span class="key">client_secret</span>=<span class="s">sk_live_secretsecret</span>
+<span class="key">grant_type</span>=<span class="s">client_credentials</span>
+<span class="key">scope</span>=<span class="s">cards:write transactions:approve</span>
+
+<span class="c">// Response 200</span>
+{
+  <span class="key">"access_token"</span>: <span class="s">"eyJhbGciOiJSUzI1NiJ9..."</span>,
+  <span class="key">"token_type"</span>: <span class="s">"Bearer"</span>,
+  <span class="key">"expires_in"</span>: <span class="n">3600</span>,
+  <span class="key">"scope"</span>: <span class="s">"cards:write transactions:approve"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <span class="info-box-icon">⚠️</span>
+        <div>Los tokens de acceso expiran en <strong>1 hora</strong>. Implementa refresco automático en tu integración. En sandbox usa el prefijo <code>sk_test_</code>, en producción <code>sk_live_</code>.</div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── CARDHOLDERS ── -->
+    <section class="doc-section" id="cardholders-create">
+      <span class="section-tag">Titulares</span>
+      <h2>Crear Titular (Cardholder)</h2>
+      <p>El titular es el usuario final que recibirá la tarjeta. Debes recopilar los datos de KYC antes de emitir la tarjeta.</p>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/cardholders</span>
+            </div>
+            <div class="endpoint-desc">Registrar un nuevo titular de tarjeta</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">first_name</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Nombre del titular como aparece en documento de identidad.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">last_name</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Apellido del titular.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">id_number</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Cédula venezolana o pasaporte. Ej: <code>V-12345678</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">email</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Email para notificaciones. Debe estar verificado.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">phone</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Teléfono en formato E.164. Ej: <code>+584121234567</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">date_of_birth</span><span class="param-type">string</span></div>
+                <div class="param-desc">Fecha de nacimiento ISO 8601. Ej: <code>1990-05-15</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">address</span><span class="param-type">object</span></div>
+                <div class="param-desc">Dirección del titular. Requerida para tarjetas físicas.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">metadata</span><span class="param-type">object</span></div>
+                <div class="param-desc">Datos adicionales de tu sistema. Ej: ID interno del usuario.</div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">REQUEST</div>
+              <div class="code-block">{
+  <span class="key">"first_name"</span>: <span class="s">"Carlos"</span>,
+  <span class="key">"last_name"</span>: <span class="s">"Mendoza"</span>,
+  <span class="key">"id_number"</span>: <span class="s">"V-15234567"</span>,
+  <span class="key">"email"</span>: <span class="s">"carlos@empresa.com"</span>,
+  <span class="key">"phone"</span>: <span class="s">"+584121234567"</span>,
+  <span class="key">"date_of_birth"</span>: <span class="s">"1992-08-20"</span>,
+  <span class="key">"address"</span>: {
+    <span class="key">"line1"</span>: <span class="s">"Av. Francisco de Miranda"</span>,
+    <span class="key">"line2"</span>: <span class="s">"Torre Europa, Piso 5"</span>,
+    <span class="key">"city"</span>: <span class="s">"Caracas"</span>,
+    <span class="key">"state"</span>: <span class="s">"Distrito Capital"</span>,
+    <span class="key">"country"</span>: <span class="s">"VE"</span>
+  },
+  <span class="key">"metadata"</span>: {
+    <span class="key">"internal_user_id"</span>: <span class="s">"usr_9988"</span>
+  }
+}
+
+<span class="c">// Response 201</span>
+{
+  <span class="key">"id"</span>: <span class="s">"ch_7fK2mNpQrXs9"</span>,
+  <span class="key">"object"</span>: <span class="s">"cardholder"</span>,
+  <span class="key">"status"</span>: <span class="s">"active"</span>,
+  <span class="key">"kyc_status"</span>: <span class="s">"approved"</span>,
+  <span class="key">"created_at"</span>: <span class="s">"2026-04-08T14:32:00Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── CARDS ── -->
+    <section class="doc-section" id="cards-create">
+      <span class="section-tag">Tarjetas</span>
+      <h2>Emitir Tarjeta</h2>
+      <p>Crea una tarjeta virtual o física para un titular. Las tarjetas físicas son gestionadas y entregadas por PagoASAP directamente a la dirección del titular.</p>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/cards</span>
+            </div>
+            <div class="endpoint-desc">Emitir una tarjeta virtual o física cobranded</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">cardholder_id</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">ID del titular al que se asocia la tarjeta.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">card_program_id</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">ID del programa de tarjeta cobranded configurado.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">type</span><span class="param-type">enum</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Tipo de tarjeta: <code>virtual</code> o <code>physical</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">currency</span><span class="param-type">string</span></div>
+                <div class="param-desc">Moneda de la tarjeta. Soportado: <code>VES</code>, <code>USD</code>, <code>EUR</code>. Default: <code>USD</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">spending_limit</span><span class="param-type">object</span></div>
+                <div class="param-desc">Límite de gasto. Ej: <code>{"amount": 500, "period": "monthly"}</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">alias</span><span class="param-type">string</span></div>
+                <div class="param-desc">Nombre descriptivo para identificar la tarjeta en tu sistema.</div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">REQUEST</div>
+              <div class="code-block">{
+  <span class="key">"cardholder_id"</span>: <span class="s">"ch_7fK2mNpQrXs9"</span>,
+  <span class="key">"card_program_id"</span>: <span class="s">"cp_MiEmpresa2024"</span>,
+  <span class="key">"type"</span>: <span class="s">"physical"</span>,
+  <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+  <span class="key">"spending_limit"</span>: {
+    <span class="key">"amount"</span>: <span class="n">1000</span>,
+    <span class="key">"period"</span>: <span class="s">"monthly"</span>
+  },
+  <span class="key">"alias"</span>: <span class="s">"Tarjeta Principal Carlos"</span>
+}
+
+<span class="c">// Response 201</span>
+{
+  <span class="key">"id"</span>: <span class="s">"card_9Xp3nKmRtL8q"</span>,
+  <span class="key">"object"</span>: <span class="s">"card"</span>,
+  <span class="key">"type"</span>: <span class="s">"physical"</span>,
+  <span class="key">"status"</span>: <span class="s">"created"</span>,
+  <span class="key">"last4"</span>: <span class="s">"4582"</span>,
+  <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+  <span class="key">"network"</span>: <span class="s">"mastercard"</span>,
+  <span class="key">"delivery_status"</span>: <span class="s">"in_production"</span>,
+  <span class="key">"estimated_delivery"</span>: <span class="s">"2026-04-15"</span>,
+  <span class="key">"created_at"</span>: <span class="s">"2026-04-08T15:00:00Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Estados de la Tarjeta</h3>
+      <table class="obj-table">
+        <thead><tr><th>Estado</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-badge s-pending">created</span></td><td>Solo para físicas. En proceso de producción e impresión.</td></tr>
+          <tr><td><span class="status-badge s-active">active</span></td><td>Tarjeta operativa. Puede procesar transacciones.</td></tr>
+          <tr><td><span class="status-badge s-frozen">frozen</span></td><td>Suspendida temporalmente. Se puede reactivar.</td></tr>
+          <tr><td><span class="status-badge s-cancelled">cancelled</span></td><td>Cancelada permanentemente. No puede reactivarse.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── TRANSACTIONS ── -->
+    <section class="doc-section" id="tx-approve">
+      <span class="section-tag">Transacciones — Diferencial PagoASAP</span>
+      <h2>Aprobar Transacción</h2>
+      <p>Este es el endpoint central del modelo de PagoASAP. Cuando un tarjetahabiente intenta pagar, recibes un webhook <code>transaction.pending</code> y debes responder aprobando o rechazando en menos de <strong>2 segundos</strong>. El monto se debita de tu balance prefunded.</p>
+
+      <div class="info-box lime">
+        <span class="info-box-icon">💡</span>
+        <div><strong>Ventaja para el partner:</strong> Puedes implementar tu propia lógica de riesgo, límites personalizados, o restricciones por categoría de merchant (MCC) antes de aprobar. Tienes control total sobre cada transacción de tus usuarios.</div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/transactions/{transaction_id}/approve</span>
+            </div>
+            <div class="endpoint-desc">Aprobar una transacción pendiente — debita del balance prefunded</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Path Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">transaction_id</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">ID de la transacción pendiente recibida en el webhook.</div>
+              </div>
+              <div class="params-title" style="margin-top:16px">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">reason</span><span class="param-type">string</span></div>
+                <div class="param-desc">Razón de aprobación para auditoría interna. Opcional.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">metadata</span><span class="param-type">object</span></div>
+                <div class="param-desc">Datos adicionales de tu sistema para correlación interna.</div>
+              </div>
+              <div style="margin-top:20px;padding:12px;background:#f9f8fc;border-radius:8px;font-size:12px;color:#6b6870;">
+                <strong style="color:#1c191e">⏱ Timeout:</strong> Si no respondes en <strong>2 segundos</strong>, la transacción es rechazada automáticamente y el tarjetahabiente recibe una notificación.
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">REQUEST</div>
+              <div class="code-block"><span class="c">// POST /transactions/tx_8Yw3nBvRkP2m/approve</span>
+{
+  <span class="key">"reason"</span>: <span class="s">"within_daily_limit"</span>,
+  <span class="key">"metadata"</span>: {
+    <span class="key">"internal_ref"</span>: <span class="s">"ORD-20240408-009"</span>
+  }
+}
+
+<span class="c">// Response 200</span>
+{
+  <span class="key">"id"</span>: <span class="s">"tx_8Yw3nBvRkP2m"</span>,
+  <span class="key">"object"</span>: <span class="s">"transaction"</span>,
+  <span class="key">"status"</span>: <span class="s">"approved"</span>,
+  <span class="key">"amount"</span>: <span class="n">45.00</span>,
+  <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+  <span class="key">"merchant"</span>: {
+    <span class="key">"name"</span>: <span class="s">"Supermercado Central"</span>,
+    <span class="key">"mcc"</span>: <span class="s">"5411"</span>,
+    <span class="key">"city"</span>: <span class="s">"Caracas"</span>
+  },
+  <span class="key">"prefunded_balance_after"</span>: <span class="n">4955.00</span>,
+  <span class="key">"approved_at"</span>: <span class="s">"2026-04-08T16:42:01Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint-card" id="tx-decline">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/transactions/{transaction_id}/decline</span>
+            </div>
+            <div class="endpoint-desc">Rechazar una transacción pendiente</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">decline_reason</span><span class="param-type">enum</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Código de razón: <code>insufficient_funds</code>, <code>spending_limit_exceeded</code>, <code>merchant_blocked</code>, <code>fraud_suspected</code>, <code>partner_rule</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">message</span><span class="param-type">string</span></div>
+                <div class="param-desc">Mensaje descriptivo. Se mostrará al tarjetahabiente si aplica.</div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">REQUEST</div>
+              <div class="code-block">{
+  <span class="key">"decline_reason"</span>: <span class="s">"spending_limit_exceeded"</span>,
+  <span class="key">"message"</span>: <span class="s">"Has superado tu límite mensual"</span>
+}
+
+<span class="c">// Response 200</span>
+{
+  <span class="key">"id"</span>: <span class="s">"tx_8Yw3nBvRkP2m"</span>,
+  <span class="key">"status"</span>: <span class="s">"declined"</span>,
+  <span class="key">"decline_reason"</span>: <span class="s">"spending_limit_exceeded"</span>,
+  <span class="key">"declined_at"</span>: <span class="s">"2026-04-08T16:42:01Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Estados de Transacción</h3>
+      <table class="obj-table">
+        <thead><tr><th>Estado</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-badge s-pending">pending</span></td><td>Esperando aprobación del partner. Ventana: 2 segundos.</td></tr>
+          <tr><td><span class="status-badge s-approved">approved</span></td><td>Aprobada y procesada. Balance prefunded debitado.</td></tr>
+          <tr><td><span class="status-badge s-declined">declined</span></td><td>Rechazada por el partner o por timeout.</td></tr>
+          <tr><td><span class="status-badge s-declined">reversed</span></td><td>Aprobada pero revertida posteriormente (disputa/devolución).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── BALANCE ── -->
+    <section class="doc-section" id="balance-get">
+      <span class="section-tag">Balance Prefunded</span>
+      <h2>Gestión de Balance Prefunded</h2>
+      <p>El partner debe mantener un balance prefunded en PagoASAP. Este balance se debita automáticamente cuando apruebas transacciones. Configura alertas de bajo balance a través de webhooks.</p>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-get">GET</span>
+              <span class="endpoint-path">/balance</span>
+            </div>
+            <div class="endpoint-desc">Consultar saldo actual de tu cuenta prefunded</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Query Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">currency</span><span class="param-type">string</span></div>
+                <div class="param-desc">Filtrar por moneda: <code>USD</code>, <code>VES</code>, <code>EUR</code>. Si se omite, devuelve todos.</div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">RESPONSE 200</div>
+              <div class="code-block">{
+  <span class="key">"object"</span>: <span class="s">"balance"</span>,
+  <span class="key">"partner_id"</span>: <span class="s">"prt_Xk9mLpNqRs3v"</span>,
+  <span class="key">"balances"</span>: [
+    {
+      <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+      <span class="key">"available"</span>: <span class="n">12450.00</span>,
+      <span class="key">"reserved"</span>: <span class="n">320.00</span>,
+      <span class="key">"total"</span>: <span class="n">12770.00</span>
+    },
+    {
+      <span class="key">"currency"</span>: <span class="s">"VES"</span>,
+      <span class="key">"available"</span>: <span class="n">450820.00</span>,
+      <span class="key">"reserved"</span>: <span class="n">0</span>,
+      <span class="key">"total"</span>: <span class="n">450820.00</span>
+    }
+  ],
+  <span class="key">"low_balance_threshold"</span>: <span class="n">500.00</span>,
+  <span class="key">"updated_at"</span>: <span class="s">"2026-04-08T16:00:00Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── WEBHOOKS ── -->
+    <section class="doc-section" id="webhooks-intro">
+      <span class="section-tag">Webhooks</span>
+      <h2>Eventos Webhook</h2>
+      <p>PagoASAP envía eventos en tiempo real a tu endpoint cuando ocurren acciones relevantes. El evento más crítico es <code>transaction.pending</code> — debes procesar y responder en menos de 2 segundos.</p>
+
+      <div class="info-box blue">
+        <span class="info-box-icon">🔐</span>
+        <div>Verifica la autenticidad de cada webhook usando el header <code>X-PagoASAP-Signature</code>. Contiene un HMAC-SHA256 del payload firmado con tu webhook secret.</div>
+      </div>
+
+      <h3>Eventos disponibles</h3>
+      <div class="webhook-event">
+        <span class="we-icon">⚡</span>
+        <div>
+          <div class="we-name">transaction.pending</div>
+          <div class="we-desc">Transacción esperando aprobación. Responde con approve/decline en ≤2s.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">✅</span>
+        <div>
+          <div class="we-name">transaction.approved</div>
+          <div class="we-desc">Confirmación de transacción aprobada y procesada exitosamente.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">❌</span>
+        <div>
+          <div class="we-name">transaction.declined</div>
+          <div class="we-desc">Transacción rechazada por el partner, por reglas o por timeout.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">🔄</span>
+        <div>
+          <div class="we-name">transaction.reversed</div>
+          <div class="we-desc">Reversión o chargeback de una transacción previamente aprobada.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">💳</span>
+        <div>
+          <div class="we-name">card.created</div>
+          <div class="we-desc">Tarjeta virtual creada y lista para usar.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">📦</span>
+        <div>
+          <div class="we-name">card.delivered</div>
+          <div class="we-desc">Tarjeta física entregada al titular en la dirección registrada.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">⚠️</span>
+        <div>
+          <div class="we-name">balance.low</div>
+          <div class="we-desc">Tu balance prefunded está por debajo del umbral configurado.</div>
+        </div>
+      </div>
+      <div class="webhook-event">
+        <span class="we-icon">💰</span>
+        <div>
+          <div class="we-name">payout.completed</div>
+          <div class="we-desc">Payout procesado exitosamente hacia la cuenta destino.</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px">Estructura de payload</h3>
+      <div class="endpoint-card">
+        <div class="code-block" style="padding:20px">{
+  <span class="key">"id"</span>: <span class="s">"evt_3Kp8nXmQrTs7"</span>,
+  <span class="key">"object"</span>: <span class="s">"event"</span>,
+  <span class="key">"type"</span>: <span class="s">"transaction.pending"</span>,
+  <span class="key">"created_at"</span>: <span class="s">"2026-04-08T16:42:00.123Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="s">"tx_8Yw3nBvRkP2m"</span>,
+    <span class="key">"amount"</span>: <span class="n">45.00</span>,
+    <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+    <span class="key">"card_id"</span>: <span class="s">"card_9Xp3nKmRtL8q"</span>,
+    <span class="key">"cardholder_id"</span>: <span class="s">"ch_7fK2mNpQrXs9"</span>,
+    <span class="key">"merchant"</span>: {
+      <span class="key">"name"</span>: <span class="s">"Supermercado Central"</span>,
+      <span class="key">"mcc"</span>: <span class="s">"5411"</span>,
+      <span class="key">"city"</span>: <span class="s">"Caracas"</span>,
+      <span class="key">"country"</span>: <span class="s">"VE"</span>
+    },
+    <span class="key">"decision_deadline"</span>: <span class="s">"2026-04-08T16:42:02.123Z"</span>
+  }
+}</div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── PAYOUTS ── -->
+    <section class="doc-section" id="payouts-create">
+      <span class="section-tag">Payouts</span>
+      <h2>API de Payouts</h2>
+      <p>Envía dinero a cuentas bancarias, wallets digitales y beneficiarios en Venezuela y el exterior, utilizando la red de pagos de ASAP.</p>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header" onclick="toggleEndpoint(this)">
+          <div class="endpoint-meta">
+            <div class="endpoint-path-row">
+              <span class="http-badge badge-post">POST</span>
+              <span class="endpoint-path">/payouts</span>
+            </div>
+            <div class="endpoint-desc">Crear un payout hacia una cuenta o wallet</div>
+          </div>
+          <span class="endpoint-expand">›</span>
+        </div>
+        <div class="endpoint-body open">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+              <div class="params-title">Body Parameters</div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">amount</span><span class="param-type">number</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Monto a enviar en la moneda especificada.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">currency</span><span class="param-type">string</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Moneda del payout: <code>USD</code>, <code>VES</code>, <code>EUR</code></div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">destination</span><span class="param-type">object</span><span class="param-required">REQUIRED</span></div>
+                <div class="param-desc">Cuenta destino. Incluye <code>type</code> (bank_account, wallet, card) y datos del beneficiario.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">description</span><span class="param-type">string</span></div>
+                <div class="param-desc">Descripción del pago para el destinatario.</div>
+              </div>
+              <div class="param-row">
+                <div class="param-name-row"><span class="param-name">idempotency_key</span><span class="param-type">string</span></div>
+                <div class="param-desc">Clave única para evitar duplicados. Usa UUID v4.</div>
+              </div>
+            </div>
+            <div class="endpoint-example">
+              <div class="code-label">REQUEST</div>
+              <div class="code-block">{
+  <span class="key">"amount"</span>: <span class="n">250.00</span>,
+  <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+  <span class="key">"destination"</span>: {
+    <span class="key">"type"</span>: <span class="s">"bank_account"</span>,
+    <span class="key">"bank_code"</span>: <span class="s">"0102"</span>,
+    <span class="key">"account_number"</span>: <span class="s">"01020123456789012345"</span>,
+    <span class="key">"account_type"</span>: <span class="s">"savings"</span>,
+    <span class="key">"beneficiary_name"</span>: <span class="s">"María González"</span>,
+    <span class="key">"id_number"</span>: <span class="s">"V-18765432"</span>
+  },
+  <span class="key">"description"</span>: <span class="s">"Pago nómina Abril 2026"</span>,
+  <span class="key">"idempotency_key"</span>: <span class="s">"uuid-1234-5678-abcd"</span>
+}
+
+<span class="c">// Response 201</span>
+{
+  <span class="key">"id"</span>: <span class="s">"po_5Nm2kQrXtY9s"</span>,
+  <span class="key">"object"</span>: <span class="s">"payout"</span>,
+  <span class="key">"status"</span>: <span class="s">"processing"</span>,
+  <span class="key">"amount"</span>: <span class="n">250.00</span>,
+  <span class="key">"currency"</span>: <span class="s">"USD"</span>,
+  <span class="key">"estimated_arrival"</span>: <span class="s">"2026-04-08T17:00:00Z"</span>,
+  <span class="key">"created_at"</span>: <span class="s">"2026-04-08T16:45:00Z"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- ── ERRORS ── -->
+    <section class="doc-section" id="errors">
+      <span class="section-tag">Errores</span>
+      <h2>Códigos de Error</h2>
+      <p>PagoASAP usa códigos HTTP estándar con detalles estructurados en el body:</p>
+      <table class="obj-table">
+        <thead><tr><th>HTTP</th><th>Código</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td>400</td><td>invalid_request</td><td>Parámetros inválidos o faltantes.</td></tr>
+          <tr><td>401</td><td>unauthorized</td><td>Token inválido, expirado o sin permisos.</td></tr>
+          <tr><td>402</td><td>insufficient_prefunded_balance</td><td>Balance prefunded insuficiente para aprobar la TX.</td></tr>
+          <tr><td>404</td><td>resource_not_found</td><td>El recurso solicitado no existe.</td></tr>
+          <tr><td>409</td><td>duplicate_request</td><td>Idempotency key ya fue procesada.</td></tr>
+          <tr><td>422</td><td>kyc_required</td><td>El titular requiere completar KYC antes de emitir tarjeta.</td></tr>
+          <tr><td>429</td><td>rate_limit_exceeded</td><td>Demasiadas requests. Límite: 100 req/min.</td></tr>
+          <tr><td>408</td><td>tx_decision_timeout</td><td>No respondiste approve/decline en 2 segundos.</td></tr>
+          <tr><td>500</td><td>internal_error</td><td>Error interno. Contacta support@pagoasap.com</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+  function toggleEndpoint(header) {
+    const body = header.nextElementSibling;
+    const expand = header.querySelector('.endpoint-expand');
+    if (body.classList.contains('open')) {
+      body.classList.remove('open');
+      expand.textContent = '›';
+    } else {
+      body.classList.add('open');
+      expand.textContent = '⌄';
+    }
+  }
+
+  // Highlight active nav item on scroll
+  const sections = document.querySelectorAll('.doc-section');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navItems.forEach(item => {
+      item.classList.remove('active');
+      if (item.getAttribute('href') === '#' + current) item.classList.add('active');
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
